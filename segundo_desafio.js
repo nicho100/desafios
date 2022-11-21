@@ -8,7 +8,7 @@ fs.writeFileSync(file,'hola')
 }catch(err){
 console.error(err)
 }
-const fileData=fs.readFileSync(file,'utf-8')
+
 
 
 class contenedor{
