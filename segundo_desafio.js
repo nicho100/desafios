@@ -2,12 +2,12 @@
 //const { info } = require('console')
 const fs=require('fs')
 const file='./archivos/productos.txt'
-//try{let file ='./archivos/productos.txt'
-//fs.mkdirSync('./archivos')
-//fs.writeFileSync(file,'hola')
-//}catch(err){
-//console.error(err)
-//}
+try{let file ='./archivos/productos.txt'
+fs.mkdirSync('./archivos')
+fs.writeFileSync(file,'hola')
+}catch(err){
+console.error(err)
+}
 const fileData=fs.readFileSync(file,'utf-8')
 
 
