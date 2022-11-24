@@ -79,7 +79,7 @@ class contenedor{
         
     async function leer(){
     try{
-      const contenido= await fs.promises.readFile(file,'utf-8')
+      const contenido= await fs.promises.readFile(path,'utf-8')
       let info=JSON.parse(contenido)
       
       
@@ -105,12 +105,14 @@ return retornar()
                 console.log("no se pudo leer el archivo")
             }else{
                 info =JSON.parse(contenido)
+                console.log(info)
                 let bandera=-1
                 for(let i = 0;i <info.length;i++){
                     if (info[i].id===number){
                         info.splice(i,1)
                         bandera=1
                         fs.writeFileSync(this.archivo,JSON.stringify(info,null,2))
+                        console.log(info)
                           }
                 } if (bandera===-1){
                     console.log("el elemento no se encuentra en el archivo")
@@ -124,8 +126,10 @@ return retornar()
                 console.log("no se pudo leer el archivo")
             }else{ 
                let info =JSON.parse(contenido)
-                info.splice(0,info.length)
+               console.log(info) 
+               info.splice(0,info.length)
                 fs.writeFileSync(this.archivo,JSON.stringify(info,null,2))
+                console.log(info)
             }
         })
     }//funciona
@@ -135,7 +139,6 @@ const producto=new contenedor(path);
 let object={title:"ventilador",price:300,url:"link"}
 producto.save(object).then(result => console.log(result)).catch(error => console.error(error))
 producto.getbyid(6).then(result => console.log(result)).catch(error => console.error(error))
-console.log(producto.getbyid(1))
 producto.getAll().then(result => console.log(result)).catch(error => console.error(error))
 producto.deleteById(2)
 producto.deleteAll()
