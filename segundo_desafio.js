@@ -1,11 +1,12 @@
 const fs=require('fs')
-const file='./archivos/productos.txt'
+const path='./archivos/productos.txt'
 
-//try{let file ='./archivos/productos.txt'
-//fs.mkdirSync('./archivos')
-//}catch(err){
-//console.error(err)
-//}
+try{let path ='./archivos/productos.txt'
+fs.mkdirSync('./archivos')
+fs.writeFileSync(path,"[]")
+}catch(err){
+console.error(err)
+}
 
 
 class contenedor{
@@ -16,44 +17,39 @@ class contenedor{
     save(object){
         //traer el contenido del archivo y preguntar si tiene algo,si no se pone objet id en 1
         //si hay contenido se recorre y se guarda el id del ultimo y se le suma uno y al objeto.id se le asigna lo guardado
-        fs.readFile(this.archivo,'utf-8',(error,contenido)=>{
-            if (error){
-                console.log("no se pudo leer el archivo")
-            }else{
-                
-                let info =JSON.parse(contenido)//esto tira error cuando el archivo viene vacio
-                if (info ==undefined){  
-                    object["id"]=1
-                   console.log(object)
-                    //fs.writeFile(this.archivo,object)//esta linea da error
-                    return(object.id)
-                }else{
+        async function leer(){
+            try{
+              const contenido= await fs.promises.readFile(path,'utf-8')
+              
+              let info =JSON.parse(contenido)
                     
-                    let info=JSON.parse(contenido)
-                    let mayor=-1
-                    for(let i = 0;i <info.length;i++){
-                    if (info[i].id>mayor){
-                        mayor=info[i].id
-                    }}
-                    object["id"]=mayor+1
-                    info.push(object)
-                    //fs.writeFile(this.archivo,JSON.stringify(info,null,2))//esta linea me da error
-                    console.log(mayor+1)
-                 
-                }
-                
+              let mayor=0
+              for(let i = 0;i <info.length;i++){
+              if (info[i].id>mayor){
+                      mayor=info[i].id
+              }}
+              object["id"]=mayor+1
+              info.push(object)
+              fs.writeFileSync(path,JSON.stringify(info,null,2))
+              return mayor+1
             }
-            return "gol" //el return se ejecuta antes del readfile
-        })
-       
+            catch(err){
+                console.log("error de lectura",err)
+            }
+        }
+        const retornar=async()=>{
+            const ret= await leer()
+          return ret   
+        }
+        return retornar()
     }
-       getbyid(number){
+    getbyid(number){
         let resultado=null
         async function leer(){
             try{
-              const contenido= await fs.promises.readFile(file,'utf-8')
+              const contenido= await fs.promises.readFile(path,'utf-8')
               let bandera=0
-              let info=JSON.parse(contenido)
+              let info= JSON.parse(contenido)
               for(let i = 0;i <info.length;i++){
               if (info[i].id==number){
                   resultado = info[i]
@@ -74,26 +70,33 @@ class contenedor{
         }
         const retornar=async()=>{
             const ret= await leer()
-            console.log(ret)
+            
             return ret   
         }
-        return ( retornar())
-            
-            
-    }
+        return ( retornar())  
+    }//funciona
     getAll(){
-        let info="no se cambio"
-        fs.readFile(this.archivo,'utf-8',(error,contenido)=>{
-            if (error){
-                console.log("no se pudo leer el archivo")
-            }else{
-                
-                info =JSON.parse(contenido)
-                
-            }    
-        })
-        return info//este return se ejecuta antes del readfile
+        
+    async function leer(){
+    try{
+      const contenido= await fs.promises.readFile(file,'utf-8')
+      let info=JSON.parse(contenido)
+      
+      
+      return info
     }
+    catch(err){
+        console.log("error de lectura",err)
+    }
+}
+
+const retornar=async()=>{
+    const ret= await leer()
+  return ret   
+}
+return retornar()
+       
+    }//funciona
     deleteById(number){
         let info=""
         
@@ -106,39 +109,33 @@ class contenedor{
                 for(let i = 0;i <info.length;i++){
                     if (info[i].id===number){
                         info.splice(i,1)
-                        console.log(info)
                         bandera=1
-                        fs.writeFile(this.archivo,JSON.stringify(info,null,2))//me genera error esta linea
+                        fs.writeFileSync(this.archivo,JSON.stringify(info,null,2))
                           }
-                        } if (bandera===-1){
-                            console.log("el elemento no se encuentra en el archivo")
-                        }
-                
-                }
-           
-            
+                } if (bandera===-1){
+                    console.log("el elemento no se encuentra en el archivo")
+                    }
+            }
         }) 
-    }
+    }//funciona
     deleteAll(){
-        let info=""
         fs.readFile(this.archivo,'utf-8',(error,contenido)=>{
             if (error){
                 console.log("no se pudo leer el archivo")
             }else{ 
-                info =JSON.parse(contenido)
+               let info =JSON.parse(contenido)
                 info.splice(0,info.length)
-                console.log(info)
-                //fs.writeFile(this.archivo,JSON.stringify(info,null,2))//esta linea me da error
+                fs.writeFileSync(this.archivo,JSON.stringify(info,null,2))
             }
         })
-    }
+    }//funciona
 }
 
-const producto=new contenedor(file);
+const producto=new contenedor(path);
 let object={title:"ventilador",price:300,url:"link"}
+producto.save(object).then(result => console.log(result)).catch(error => console.error(error))
+producto.getbyid(6).then(result => console.log(result)).catch(error => console.error(error))
 console.log(producto.getbyid(1))
-//console.log(producto.save(object))
-//console.log(producto.getAll())
-//producto.deleteById(4)
-//producto.deleteAll()
-
+producto.getAll().then(result => console.log(result)).catch(error => console.error(error))
+producto.deleteById(2)
+producto.deleteAll()
