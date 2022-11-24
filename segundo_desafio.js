@@ -47,30 +47,37 @@ class contenedor{
         })
        
     }
-    getbyid(number){
+       getbyid(number){
         let resultado=null
-        fs.readFile(this.archivo,'utf-8',(error,contenido)=>{
-            if (error){
-                console.log("no se pudo leer el archivo")
-            }else{
-                
-                let bandera=0
-                let info=JSON.parse(contenido)
-                for(let i = 0;i <info.length;i++){
-                if (info[i].id==number){
-                    resultado = info[i]
-                    
-                    bandera=1
-                      }  } 
-                if (bandera===0){
-                    resultado=null
-                    console.log("no se encontro el elemento")   
-                } 
-            
-                }
-            })
-            
-            return resultado   //este return se ejecuta antes del readfile
+        async function leer(){
+            try{
+              const contenido= await fs.promises.readFile(file,'utf-8')
+              let bandera=0
+              let info=JSON.parse(contenido)
+              for(let i = 0;i <info.length;i++){
+              if (info[i].id==number){
+                  resultado = info[i]
+                  
+                  bandera=1
+                    }  } 
+              if (bandera===0){
+                  resultado=null
+                  console.log("no se encontro el elemento")   
+              }
+              
+              return resultado
+              
+            }
+            catch(err){
+                console.log("error de lectura",err)
+            }
+        }
+        const retornar=async()=>{
+            const ret= await leer()
+            console.log(ret)
+            return ret   
+        }
+        return ( retornar())
             
             
     }
@@ -129,8 +136,8 @@ class contenedor{
 
 const producto=new contenedor(file);
 let object={title:"ventilador",price:300,url:"link"}
-//console.log(producto.getbyid(1))
-console.log(producto.save(object))
+console.log(producto.getbyid(1))
+//console.log(producto.save(object))
 //console.log(producto.getAll())
 //producto.deleteById(4)
 //producto.deleteAll()
